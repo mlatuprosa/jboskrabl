@@ -40,7 +40,7 @@ emptyModArray size = listArray ((1,1),(size,size)) (repeat (LetterMod 1))
 initSeq :: Map.Map Char Int -> String -> String
 initSeq _ [] = []
 initSeq dict (l:ls) = case fmap (<=1) (Map.lookup l dict) of
-	Nothing    -> initSeq dict ls
+	Nothing    -> if Map.null dict then [] else initSeq dict ls
 	Just True  -> l:initSeq (Map.delete l dict) ls
 	Just False -> l:initSeq (Map.insertWith (\new old -> old - new) l 1 dict) ls
 
@@ -58,7 +58,8 @@ make_players :: BoardConf -> String -> Array Int Player
 make_players conf lookups = array (0,player_count conf - 1) $ zip [0..] $ myplayers (player_count conf) (player_tiles conf) (initSeq (tile_map conf) lookups) []
 
 myplayers :: (Ord a,Integral a,Num a) => a->a->[Char]->[Player]->[Player]
-myplayers m n ts ps | lazyLenGreater (m*n) ts = error "too few tiles to initialize"
-		    | m <= 0 = ps
-		    | otherwise = myplayers (m-1) n (genericDrop n ts) ((Player (genericTake n ts) 0):ps) 
+myplayers m n ts ps | m <= 0 = ps
+		    | otherwise = let (ts',rack) = transfer n ts []
+		                  in myplayers (m-1) n ts' ((Player rack 0):ps)
+ 
 

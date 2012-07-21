@@ -32,12 +32,3 @@ lazyLenEq x zs = helper zs 0
 	helper (y:ys) acc | x == acc = True
 			  | x <  acc = False
 			  | x >  acc = helper ys (acc+1)
-
-takeWhileJust :: [Maybe a] -> [a]
-takeWhileJust ((Just x):ms) = x:takeWhileJust ms
-takeWhileJust _             = []
-
-duplicates = duplicatesSorted . sort
- 
-duplicatesSorted (x:y:ys) = x == y || duplicatesSorted (y:ys)
-duplicatesSorted _ = False
