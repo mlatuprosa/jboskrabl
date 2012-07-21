@@ -24,7 +24,7 @@ showrow = concatMap showtile
 showtile (Just c,_,_)  = showletter c
 showtile (_,_,True)    = box $ replicate 3 ' ' ++ "*" ++ replicate 3 ' '
 showtile (_,m,_) = show m
-showletter c = box $ c:(show (scoreLetter' c) ++ replicate (9-used_width) ' ')
+showletter c = box $ c:(show (scoreLetter' c) ++ replicate (7-used_width) ' ')
   where used_width = 1 + length (show (scoreLetter' c))
 --TODO: make showletter the Show for newtype Tile c = Tile { tile :: c }; 
 --this requires adding constructors and destructors in many places however.

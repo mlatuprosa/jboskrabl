@@ -13,16 +13,18 @@ import Data.Maybe
 import Data.Either
 import ScrabbleShow
 
-getMoveList :: IO [((Int,Int),Char)]
-getMoveList = getLine >>= moveCheck . myreads
-		where moveCheck (Just (m,[])) = return m
-		      moveCheck _ = putStrLn "Your move was not formatted correctly." >> getMoveList 
-
 getMove :: IO Move
-getMove = fmap Move getMoveList
+getMove = do movewords <- fmap words getLine
+	     parseMove movewords
+	where parseMove :: [String] -> IO Move
+	      parseMove [start,"H",word] = return $ Move (read start) Horizontal word
+	      parseMove [start,"V",word] = return $ Move (read start) Vertical   word
+	      parseMove _ = putStrLn "Your move was not formatted correctly." >> getMove
 
 getConfig :: IO BoardConf
-getConfig = do  putStrLn "Tile fraction at end of game? The official game's value is about 0.45."
+getConfig = do  putStrLn "Would you like a tutorial y/n?" 
+		askyn'' tutorial
+		putStrLn "Tile fraction at end of game? The official game's value is about 0.45."
 		tf <- fracget	
 		putStrLn "Fraction of tiles which are vowels? The official game's value is about 0.44; the gismu list's value is 0.4."
 		vf <- fracget
@@ -53,6 +55,8 @@ intget = getLine >>= intCheck . myreads
 	      intCheck _ = putStrLn "You must input an integer." >> intget
 myreads = listToMaybe . reads
 
+tutorial = putStrLn "Under construction."
+
 endGame :: Board -> IO ()
 endGame board = let winner_ind = maximumBy (comparing (\i -> playerScore $ players board ! i)) [0..n_players board-1] 
 		in putStrLn $ "Congratulations, player "++show winner_ind++", you won!"
@@ -66,15 +70,15 @@ handler board | null $ tile_seq board = nearEnd board
 	      | otherwise = print board >> continue board
 
 continue :: Board -> IO ()
-continue board = do move <- getMove
-		    either printAndRetry handler $ makeMove board move
+continue board = getMove >>= either printAndRetry handler . makeMove board
 	where printAndRetry err = putStrLn err >> continue board
 
 askyn :: IO () -> IO () -> IO () -> IO ()
-askyn failure ioY ioN = do yn <- getChar
-	                   case yn of 'y' -> ioY
-		                      'n' -> ioN
-		                      _   -> failure >> askyn failure ioY ioN
+askyn failure ioN ioY = do yn <- getLine
+	                   case yn of "n" -> ioN
+		                      "y" -> ioY
+		                      _   -> failure
 
-askyn' = askyn $ putStrLn "You must say either y or n."
+askyn' ioN ioY = askyn (putStrLn "You must say either y or n." >> askyn' ioN ioY) ioN ioY	
 
+askyn'' = askyn' (return ())

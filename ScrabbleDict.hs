@@ -34,7 +34,7 @@ consonantRanges = [maxConsonantFreq,9*maxConsonantFreq/10..0]
 
 pickRange :: (Ord a,Num b) => [a] -> a -> b
 pickRange [] _ = error "empty range list"
-pickRange [bottom] x | bottom <= x = 0
+pickRange [bottom] x  | bottom <= x = 0
                       | otherwise = error "minimum is larger than input"
 pickRange (upper:lower:ranges) x  | upper >= x && lower < x = 1
                                   | otherwise = 1 + pickRange (lower:ranges) x

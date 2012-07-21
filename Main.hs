@@ -6,5 +6,5 @@ import System.Random
 
 main :: IO ()
 main = do conf <- getConfig
-	  gen <- getStdGen 
+	  gen <- getStdGen
 	  handler $ initBoard conf (randomRs ('a','z') gen)

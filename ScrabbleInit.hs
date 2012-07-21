@@ -12,6 +12,10 @@ tile_count :: BoardConf -> Int
 tile_count conf = round $ fromIntegral m * fromIntegral n * tile_frac conf
   where (m,n) = snd $ bounds $ modArray conf
 
+--Semantic warning: because of rounding, mapSum (tile_map conf) is only approximately 
+--equal to tile_count conf. For reasonable total numbers of tiles,
+--these errors are relatively small. 
+
 vowel_count :: BoardConf -> Int
 vowel_count conf = round $ fromIntegral (tile_count conf) * vowel_frac conf
 
@@ -28,17 +32,17 @@ initBoard conf lookups =  Board {  tile_seq = initSeq (tile_map conf) lookups,
 			  	   players = make_players conf lookups,
 			           player_ind = 0,
 			           n_players = player_count conf,
-			           firstMove = True
-			 } 
+			           firstMove = True} 
 
 emptyModArray :: Int -> Array (Int,Int) Modifier
 emptyModArray size = listArray ((1,1),(size,size)) (repeat (LetterMod 1)) 
 
 initSeq :: Map.Map Char Int -> String -> String
 initSeq _ [] = []
-initSeq dict (l:ls) = maybe (initSeq dict ls) (const (l:initSeq dict' ls)) (Map.lookup l dict)
-  where dict' | fromJust (Map.lookup l dict) <= 1 = Map.delete l dict
-	      | otherwise = Map.insertWith (\new old -> old - new) l 1 dict 
+initSeq dict (l:ls) = case fmap (<=1) (Map.lookup l dict) of
+	Nothing    -> initSeq dict ls
+	Just True  -> l:initSeq (Map.delete l dict) ls
+	Just False -> l:initSeq (Map.insertWith (\new old -> old - new) l 1 dict) ls
 
 tile_map :: BoardConf -> Map.Map Char Int
 tile_map conf = Map.union (vowel_map conf) (consonant_map conf)

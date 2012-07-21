@@ -23,8 +23,16 @@ data Board = Board { tile_seq :: String,
 		     n_players :: Int,
 		     firstMove :: Bool} 
 
+data Direction = Horizontal | Vertical 
+
 curr_player board = players board ! player_ind board
 
 data Player = Player { playerRack :: String, playerScore :: Double }
 
-newtype Move = Move { moveList :: [((Int,Int),Char)] }
+data SplitMove = SplitMove { onBoard  :: [((Int,Int),Char)],
+			     offBoard :: [((Int,Int),Char)] }
+
+data Move = Move { getStart :: (Int,Int),
+		   getDirection :: Direction,
+		   getWord :: String }
+
