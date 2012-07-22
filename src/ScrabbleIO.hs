@@ -14,8 +14,7 @@ import Data.Either
 import ScrabbleShow
 
 getMove :: IO Move
-getMove = do movewords <- fmap words getLine
-	     parseMove movewords
+getMove = getLine >>= parseMove . words
 	where parseMove :: [String] -> IO Move
 	      parseMove [start,"H",word] = return $ Move (read start) Horizontal word
 	      parseMove [start,"V",word] = return $ Move (read start) Vertical   word
