@@ -39,10 +39,12 @@ emptyModArray size = listArray ((1,1),(size,size)) (repeat (LetterMod 1))
 
 initSeq :: Map.Map Char Int -> String -> String
 initSeq _ [] = []
-initSeq dict (l:ls) = case fmap (<=1) (Map.lookup l dict) of
-	Nothing    -> if Map.null dict then [] else initSeq dict ls
-	Just True  -> l:initSeq (Map.delete l dict) ls
-	Just False -> l:initSeq (Map.insertWith (\new old -> old - new) l 1 dict) ls
+initSeq dict (l:ls) | Map.null dict = []
+		    | isJust (Map.lookup l dict) = l:initSeq dict' ls
+		    | otherwise = initSeq dict ls
+  where dict' = Map.update (deleteN 1) l dict
+	deleteN n m | m <= n = Nothing
+		    | otherwise = Just (m-n)
 
 tile_map :: BoardConf -> Map.Map Char Int
 tile_map conf = Map.union (vowel_map conf) (consonant_map conf)
