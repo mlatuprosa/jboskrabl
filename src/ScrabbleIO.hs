@@ -54,7 +54,7 @@ intget = getLine >>= intCheck . myreads
 	      intCheck _ = putStrLn "You must input an integer." >> intget
 myreads = listToMaybe . reads
 
-tutorial = putStrLn "Under construction."
+tutorial = putStrLn "Moves are formatted as \"(4,6) V gismu\" or \"(6,4) H gismu\". The former puts \"gismu\" vertically beginning at (4,6); the latter puts \"gismu\" horizontally beginning at (6,4). On an 11x11 grid these would both pass through the middle, and hence be valid first moves. This section is still under construction."
 
 endGame :: Board -> IO ()
 endGame board = let winner_ind = maximumBy (comparing (\i -> playerScore $ players board ! i)) [0..n_players board-1] 
