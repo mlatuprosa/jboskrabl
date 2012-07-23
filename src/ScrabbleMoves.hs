@@ -38,9 +38,9 @@ consistent board (SplitMove on _) = and $ zipWith onAndEqual (map ((cboard !!!) 
 scoreMove :: Board -> SplitMove -> Double
 scoreMove board (SplitMove on off) = wordmod*(sum (map (scoreLetter' . snd) on) + sum (map applyLetterMod lettermodded))
 	where modded :: [(Char,Modifier)]
-	      modded = zip (map snd off) (map ((mboard !) . fst) off)
+	      modded = [(c,mboard ! ind) | (ind,c) <- off]
 	      (wordmodded,lettermodded) = partition (isWordMod . snd) modded
-	      wordmod = product $ map (getMod . snd) wordmodded
+	      wordmod = product [getMod mod | (_,mod) <- wordmodded]
 	      applyLetterMod (c,LetterMod m) = m*scoreLetter' c
 	      mboard = modBoard board
 
@@ -61,7 +61,7 @@ subset [] _ = True
 subset (x:xs) ys = x `elem` ys && subset xs (delete x ys) 
 
 updateBoard :: Board -> SplitMove -> Board
-updateBoard board move@(SplitMove _ off) = board { charBoard = charBoard board // map (fmap Just) off,
+updateBoard board smove@(SplitMove _ off) = board { charBoard = charBoard board // map (fmap Just) off,
 	       			                   player_ind = mod (i+1) (n_players board),
 	       			                   players = (players board) // [(i,new_player_i)],
 	       			                   tile_seq = transferred_seq,
@@ -69,4 +69,4 @@ updateBoard board move@(SplitMove _ off) = board { charBoard = charBoard board /
   	where i = player_ind board
 	      old_player_i = players board ! i
 	      (transferred_seq,new_rack) = transfer (length off) (tile_seq board) (playerRack old_player_i \\ map snd off)
-	      new_player_i = Player {playerRack = new_rack, playerScore = playerScore old_player_i + scoreMove board move} 
+	      new_player_i = Player {playerRack = new_rack, playerScore = playerScore old_player_i + scoreMove board smove} 
