@@ -57,8 +57,8 @@ makeMove board move | firstMove board && not intersectCenter = Left "The first m
 
 subset :: Eq a => [a] -> [a] -> Bool
 subset xs ys = helper xs ys xs ys
-  where helper [] _ _ _ = True
-        helper _ [] _ _ = False
+  where helper _ _ [] _ = True
+        helper _ _ _ [] = False
 	helper as bs (c:cs) (d:ds) | c == d = subset (delete c as) (delete d bs)
 				   | otherwise = helper as bs (c:cs) ds 
 

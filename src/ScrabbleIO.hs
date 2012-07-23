@@ -16,10 +16,12 @@ import ScrabbleShow
 getMove :: IO Move
 getMove = getLine >>= parseMove . words
 	where parseMove :: [String] -> IO Move
-	      parseMove [start,"H",word] = return $ Move (read start) Horizontal word
-	      parseMove [start,"V",word] = return $ Move (read start) Vertical   word
-	      parseMove _ = putStrLn "Your move was not formatted correctly." >> getMove
-
+	      parseMove [startstr,dirstr,word] = case (reads startstr,dirstr) of
+		([(ind,[])],"V") -> return $ Move ind Vertical word
+		([(ind,[])],"H") -> return $ Move ind Horizontal word
+		_ -> retry
+	      parseMove _ = retry
+	      retry = putStrLn "Your move was not formatted correctly." >> getMove
 getConfig :: IO BoardConf
 getConfig = do  putStrLn "Would you like a tutorial y/n?" 
 		askyn'' tutorial
