@@ -54,6 +54,7 @@ makeMove board move | firstMove board && not intersectCenter = Left "The first m
 	where smove@(SplitMove _ off) = splitMove board move
 	      intersectCenter = any (== center cboard) (moveRange move)
 	      cboard = charBoard board
+--TODO: re-introduce code for too many adjacencies.
 
 subset :: Eq a => [a] -> [a] -> Bool
 subset [] _ = True
