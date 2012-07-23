@@ -56,7 +56,8 @@ makeMove board move | firstMove board && not intersectCenter = Left "The first m
 	      cboard = charBoard board
 
 subset :: Eq a => [a] -> [a] -> Bool
-subset xs ys = all (`elem` ys) xs 
+subset [] _ = True
+subset (x:xs) ys = x `elem` ys && subset xs (delete x ys) 
 
 updateBoard :: Board -> SplitMove -> Board
 updateBoard board move@(SplitMove _ off) = board { charBoard = charBoard board // map (fmap Just) off,
