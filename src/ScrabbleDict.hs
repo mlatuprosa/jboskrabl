@@ -10,10 +10,10 @@ buildFreqMap :: (Num a, Ord b) => [b] -> Map.Map b a
 buildFreqMap = foldl' (\mp x -> Map.insertWith (+) x 1 mp)  Map.empty
 
 dictionary :: [String]
-dictionary = filter (\cs -> not $ elem ' ' cs) $ map (take 5) $ lines $ raw_dictionary
+dictionary = filter (notElem ' ') $ map (take 5) $ lines raw_dictionary
 
-dictionaryMap :: Map.Map String (Maybe a)
-dictionaryMap = Map.fromList [(w,Nothing) | w <- dictionary] 
+dictionaryMap :: Map.Map String ()
+dictionaryMap = Map.fromList [(w,()) | w <- dictionary] 
 letters :: String
 letters = concat dictionary
 

@@ -16,3 +16,17 @@ arr !!! i | withinBounds arr i = arr ! i
 withinBounds arr (i,j) = i >= mini && j >= minj && i <= maxi && j <= maxj 
 	where ((mini,minj),(maxi,maxj)) = bounds arr
 
+eitherCycle :: Monad m => (a -> m b) -> (c -> m d) -> m (Either a c) -> m d
+eitherCycle lf rf m = either (\l -> lf l >> eitherCycle lf rf m) rf =<< m 
+
+--Default argument forms
+eitherCycle' :: Monad m => (a -> m b) -> m (Either a c) -> m c
+eitherCycle' lf = eitherCycle lf return 
+
+errCycle :: (a->IO b) -> IO (Either String a) -> IO b
+errCycle = eitherCycle putStrLn 
+
+errCycle' :: IO (Either String a) -> IO a
+errCycle' = errCycle return
+
+

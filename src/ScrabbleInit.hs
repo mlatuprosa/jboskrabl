@@ -59,7 +59,7 @@ fractionOfSum mp x = x / mapSum mp
 make_players :: BoardConf -> String -> Array Int Player
 make_players conf lookups = array (0,player_count conf - 1) $ zip [0..] $ myplayers (player_count conf) (player_tiles conf) (initSeq (tile_map conf) lookups) []
 
-myplayers :: (Ord a,Integral a,Num a) => a->a->[Char]->[Player]->[Player]
+myplayers :: (Ord a,Integral a,Num a) => a->a->String->[Player]->[Player]
 myplayers m n ts ps | m <= 0 = ps
 		    | otherwise = let (ts',rack) = transfer n ts []
 		                  in myplayers (m-1) n ts' ((Player rack 0):ps)
