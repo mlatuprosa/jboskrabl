@@ -73,6 +73,17 @@ play board = do
   putStrLn $ if (null $ tile_seq board') then notiles board' else tiles board'
   askCycle (endGame board') (play board')
 
+--play' only asks the user if they want to stop when there are no more tiles.
+
+play' :: Board -> IO ()
+play' board = do
+  print board 
+  board' <- errCycle' $ fmap (makeMove board) getMove
+  if (null $ tile_seq board')
+    then do putStrLn notiles board'
+            askCycle (endGame board') (play' board')
+    else play' board'
+
 askyn :: b -> b -> String -> Either String b
 askyn n y yn = case map toLower yn of "n" -> Right n
 				      "y" -> Right y
