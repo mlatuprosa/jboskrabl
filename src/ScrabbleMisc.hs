@@ -8,7 +8,6 @@ infixl 9 !!!
 transfer :: Integral a => a -> [b] -> [b] -> ([b],[b])
 transfer n xs ys = (genericDrop n xs,genericTake n xs ++ ys)
 
-(!!!) :: Array i (Maybe a) -> i -> Maybe a
 --safe version of ! for Maybe arrays; used to deal with the boundary
 --in ScrabbleMoves
 arr !!! i | inRange (bounds arr) i = arr ! i
