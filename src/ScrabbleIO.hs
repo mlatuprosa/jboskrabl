@@ -80,7 +80,7 @@ play' board = do
   print board 
   board' <- errCycle' $ fmap (makeMove board) getMove
   if (null $ tile_seq board')
-    then do putStrLn notiles board'
+    then do putStrLn $ notiles board'
             askCycle (endGame board') (play' board')
     else play' board'
 
