@@ -46,7 +46,7 @@ scoreMove board (SplitMove on off) = wordmod*(sum (map (scoreLetter' . snd) on) 
 
 makeMove :: Board -> Move -> Either String Board
 makeMove board move | firstMove board && not intersectCenter = Left "The first move must intersect the center point, which is labeled with a star."
-		    | not $ all (withinBounds cboard) (moveRange move) = Left "Your move attempts to go outside the board."
+		    | not $ all (inRange $ bounds cboard) (moveRange move) = Left "Your move attempts to go outside the board."
 		    | not (consistent board smove) = Left "Your move is not consistent with the tiles already on the board."
 		    | not $ subset (map snd off) (playerRack $ curr_player board) = Left "tiles not available."
 		    | not $ getWord move `Map.member` dictionaryMap = Left "word not in dictionary."
