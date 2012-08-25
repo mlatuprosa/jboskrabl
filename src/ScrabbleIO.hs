@@ -58,21 +58,20 @@ intget = errCycle' $ fmap (intCheck . reads) getLine
 
 tutorial = putStrLn "Moves are formatted as \"(4,6) V gismu\" or \"(6,4) H gismu\". The former puts \"gismu\" vertically beginning at (4,6); the latter puts \"gismu\" horizontally beginning at (6,4). On an 11x11 grid these would both pass through the middle, and hence be valid first moves. This section is still under construction."
 
+notiles board = "There are no more tiles. " ++ tiles board
+
+tiles board = "Player "++show (player_ind board)++", would you like to make a move y/n?"
+
 endGame :: Board -> IO ()
 endGame board = let winner_ind = maximumBy (comparing (\i -> playerScore $ players board ! i)) [0..n_players board-1] 
 		in putStrLn $ "Congratulations, player "++show winner_ind++", you won!"
 
-
-nearEnd :: Board -> IO ()
-nearEnd board = do putStrLn $ "There are no more tiles. Player "++show (player_ind board)++", would you like to make a move y/n?"
-		   askCycle (endGame board) (continue board)
-
-handler :: Board -> IO () 
-handler board | null $ tile_seq board = nearEnd board
-	      | otherwise = print board >> continue board
-
-continue :: Board -> IO ()
-continue board = errCycle handler $ fmap (makeMove board) getMove
+play :: Board -> IO ()
+play board = do 
+  print board
+  board' <- errCycle' $ fmap (makeMove board) getMove
+  putStrLn $ if (null $ tile_seq board') then notiles board' else tiles board'
+  askCycle (endGame board') (play board')
 
 askyn :: b -> b -> String -> Either String b
 askyn n y yn = case map toLower yn of "n" -> Right n
